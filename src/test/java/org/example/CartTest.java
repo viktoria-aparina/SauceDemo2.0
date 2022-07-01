@@ -13,7 +13,7 @@ public class CartTest extends BaseTest {
         loginPage.loginAsValidUser();
         productsPage.open();
         productsPage.addToCart("Sauce Labs Fleece Jacket");
-        productsPage.clickCartButton();
+        headerPage.clickCartButton();
         assertTrue(cartPage.getTitle().isDisplayed(), "User didn't go to the cart page");
     }
 
@@ -23,6 +23,7 @@ public class CartTest extends BaseTest {
         loginPage.loginAsValidUser();
         productsPage.open();
         productsPage.addToCart("Sauce Labs Fleece Jacket");
+        productsPage.addToCart("Sauce Labs Onesie");
         cartPage.open();
         cartPage.changeCountOfProductsInCart("Sauce Labs Fleece Jacket", "3");
         Assert.assertEquals(cartPage.getCountOfProducts(), "3", "Count of products wasn't change in the cart");
@@ -34,9 +35,12 @@ public class CartTest extends BaseTest {
         loginPage.loginAsValidUser();
         productsPage.open();
         productsPage.addToCart("Sauce Labs Fleece Jacket");
+        productsPage.addToCart("Sauce Labs Onesie");
         cartPage.open();
+        cartPage.getAllProductsInCart();
         cartPage.clickRemove("Sauce Labs Fleece Jacket");
-        //Не знаю как проверить ассерт
+        cartPage.getAllProductsInCart();
+        Assert.assertEquals(cartPage.getAllProductsInCart().size(), "1", "Product wasn't remove from cart" );
     }
 
     @Test

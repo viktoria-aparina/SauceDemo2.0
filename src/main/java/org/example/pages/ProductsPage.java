@@ -7,7 +7,7 @@ import org.openqa.selenium.WebElement;
 public class ProductsPage extends BasePage {
 
     private final By TITLE = By.cssSelector(".title");
-    private final By cartButton = By.cssSelector(".shopping_cart_link");
+
     private String addToCartButton = "//div[text()='%s']/ancestor::div[@class='inventory_item']//button";
 
     public ProductsPage(WebDriver driver) {
@@ -25,9 +25,5 @@ public class ProductsPage extends BasePage {
     public void addToCart(String productName) {
         By fullLocator = By.xpath(String.format(addToCartButton, productName));
         driver.findElement(fullLocator).click();
-    }
-
-    public void clickCartButton() {
-        driver.findElement(cartButton).click();
     }
 }
