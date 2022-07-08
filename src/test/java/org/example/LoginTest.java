@@ -1,25 +1,54 @@
 package org.example;
 
+import org.example.utils.PropertiesLoader;
 import org.testng.annotations.Test;
+
+import java.util.Properties;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 public class LoginTest extends BaseTest {
 
-    @Test
+    @Test(groups = "critical_login")
     public void userShouldLoginWithValidCredentials() {
-        loginPage.open();
-        loginPage.login("standard_user", "secret_sauce");
-        assertTrue(productsPage.getTitle().isDisplayed(), "User wasn't login");
+        loginSteps.loginAsStandardUser();
+        assertTrue(productsPage.getTitle().isDisplayed(), "User was not logged in");
     }
 
     @Test
     public void passwordShouldBeRequiredForLogin() {
-        loginPage.open();
-        loginPage.login("standard_user", "");
-        assertEquals(loginPage.getError(), "Epic sadface: Password is required", "The error is incorrect");
+        loginSteps.login("standard_user", "");
+        String expected = "Epic sadface: Password is required";
+        assertEquals(loginPage.getError(), expected, "The error is incorrect");
+    }
 
+    @Test(groups = "critical_login")
+    public void userNameShouldBeRequiredForLogin() {
+        loginSteps.login("", "12345");
+        String expected = "Epic sadface: Username is required";
+        assertEquals(loginPage.getError(), expected, "The error is incorrect");
+    }
 
+    @Test
+    public void userShouldNotBeLoggedInBeWithInvalidPassword() {
+        loginSteps.login("standard_user", "12345");
+        String expected = "Epic sadface: Username and password do not match any user in this service";
+        assertEquals(loginPage.getError(), expected, "The error is incorrect");
+    }
+
+    @Test
+    public void userShouldNotBeLoggedInBeWithInvalidUserName() {
+        loginSteps.login("standard_user1", "secret_sauce");
+        String expected = "Epic sadface: Username and password do not match any user in this service";
+        assertEquals(loginPage.getError(), expected, "The error is incorrect");
+    }
+
+    @Test
+    public void lockedOutUserShouldNotBeLoggedIn() {
+        Properties properties = PropertiesLoader.loadProperties("locked_out_user.properties");
+        loginSteps.login(properties.getProperty("username"), properties.getProperty("password"));
+        String expected = "Epic sadface: Sorry, this user has been locked out.";
+        assertEquals(loginPage.getError(), expected, "The error is incorrect");
     }
 }

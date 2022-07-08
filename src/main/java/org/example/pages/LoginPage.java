@@ -1,34 +1,55 @@
 package org.example.pages;
 
-import org.openqa.selenium.By;
+import org.example.utils.PropertiesLoader;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+
+import java.util.Properties;
+
+import static org.example.steps.LoginSteps.STANDARD_USER_PROPERTIES;
 
 public class LoginPage extends BasePage {
 
-    private final By USER_NAME_INPUT = By.id("user-name");
-    private final By PASSWORD_INPUT = By.id("password");
-    private final By LOGIN_BUTTON = By.id("login-button");
-    private final By ERROR = By.cssSelector("h3[data-test=error]");
+    private static final String LOGIN_BUTTON_ID = "login-button";
+
+    private static final String URL = "login.url";
+    @FindBy(id = "user-name")
+    private WebElement userNameInput;
+
+    @FindBy(id = "password")
+    private WebElement passwordInput;
+
+    @FindBy(id = LOGIN_BUTTON_ID)
+    private WebElement loginButton;
+
+    @FindBy(css = "[data-test=error]")
+    private WebElement error;
+
 
     public LoginPage(WebDriver driver) {
         super(driver);
+        PageFactory.initElements(driver, this);
     }
 
     public void open() {
-        driver.get(BASE_URL);
+       driver.get(BASE_URL);
     }
 
-    public void login(String user, String password) {
-        driver.findElement(USER_NAME_INPUT).sendKeys(user);
-        driver.findElement(PASSWORD_INPUT).sendKeys(password);
-        driver.findElement(LOGIN_BUTTON).submit();
+    public void fillInUserName(String userName) {
+        userNameInput.sendKeys(userName);
     }
 
-    public void loginAsValidUser() {
-        login("standard_user", "secret_sauce");
+    public void fillInPassword(String password) {
+        passwordInput.sendKeys(password);
+    }
+
+    public void submitForm() {
+        loginButton.submit();
     }
 
     public String getError() {
-        return driver.findElement(ERROR).getText();
+        return error.getText();
     }
 }
