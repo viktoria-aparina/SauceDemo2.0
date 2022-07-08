@@ -4,56 +4,57 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
 
 import java.util.List;
 
 public class CartPage extends BasePage {
 
-    @FindBy (css = ".title")
+    @FindBy(css = ".title")
     private WebElement title;
-    private final By productItemInCart = By.xpath("//div[@class = 'inventory_item_name']");
-    private final By countingShoppingButton = By.id("continue-shopping");
-    private final By checkoutButton = By.id("checkout");
-    private String removeButton = "//div[text()='%s']/ancestor::div[@class='cart_item']//button";
-    private String countOfProductsForm = "//div[text()='']/ancestor::div[@class='cart_item']/div[@class='cart_quantity']";
+    @FindBy(id = "checkout")
+    private WebElement checkout;
+    @FindBy(id = "continue-shopping")
+    private WebElement continueShoppingButton;
+    @FindBy(xpath = "//div[@class='inventory_item_name']")
+    private List<WebElement> allProductsInCart;
+
+
+    private final String productInCart = "//div[text()='%s']//ancestor::div[@class='cart_item']";
+    private final String removeButton = "//div[text()='%s']//ancestor::div[@class='cart_item']//button[text()='Remove']";
+    private final String product = "//div[text()='%s']//ancestor::div[@class='cart_item']";
 
     public CartPage(WebDriver driver) {
         super(driver);
+        PageFactory.initElements(driver, this);
     }
 
     public void open() {
         driver.get(BASE_URL + "cart.html");
     }
 
+    public List<WebElement> getAllProductsInCart() {
+        return allProductsInCart;
+    }
+
+    public void checkout() {
+        checkout.click();
+    }
+
+    public void removeProductFromCart(String productName) {
+        driver.findElement(By.xpath(String.format(removeButton, productName))).click();
+    }
+
+    public WebElement getProduct(String productName) {
+        By fullLocator = By.xpath(String.format(product, productName));
+        return driver.findElement(fullLocator);
+    }
+
     public WebElement getTitle() {
         return title;
     }
 
-    public String getCountOfProducts() {
-        return driver.findElement(By.xpath(countOfProductsForm)).getText();
-    }
-
-    public void changeCountOfProductsInCart(String productNameFirst, String countProducts) {
-        By fullLocatorForCountOfProducts = By.xpath(String.format(countOfProductsForm, productNameFirst));
-        driver.findElement(fullLocatorForCountOfProducts).clear();
-        driver.findElement(fullLocatorForCountOfProducts).sendKeys(countProducts);
-    }
-
-    public void clickRemove(String productName) {
-        By fullLocatorForRemoveButton = By.xpath(String.format(removeButton, productName));
-        driver.findElement(fullLocatorForRemoveButton).click();
-    }
-
-    public void clickCountingShoppingButton() {
-        driver.findElement(countingShoppingButton).click();
-    }
-
-    public void clickCheckoutButton() {
-        driver.findElement(checkoutButton).click();
-    }
-
-    public List<WebElement> getAllProductsInCart() {
-        return driver.findElements(productItemInCart);
+    public void continueShopping() {
+        continueShoppingButton.click();
     }
 }
-
